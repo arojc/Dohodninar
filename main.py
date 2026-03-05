@@ -1,10 +1,14 @@
 import tkinter as tk
-from tkinter import ttk, messagebox
+from tkinter import ttk, messagebox, X
 from decimal import Decimal, InvalidOperation
 import matplotlib
+
+import tax_calculator
+
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+from tax_calculator import calculate_tax_in_cash, slo_brackets, calculate_tax_values
 
 
 class DohodninarApp:
@@ -18,7 +22,7 @@ class DohodninarApp:
 
         self.create_layout()
         self.create_plot()
-        self.slo_razredi()
+        self.vnesi_slo_razrede()
         self.execute()
 
     # -----------------------
@@ -91,9 +95,30 @@ class DohodninarApp:
             side="left", expand=True, fill="x", padx=2
         )
 
+        self.prikazi()
+
         ttk.Button(self.left_frame, text="Izvrši", command=self.execute).pack(
             fill="x", pady=10
         )
+
+    def prikazi(self):
+
+        #prikazi
+        grph_frame = ttk.Frame(self.left_frame)
+        grph_frame.pack(fill="x", pady=10)
+
+        v = tk.StringVar(self.left_frame, value="4")
+
+        values = {"Znesek": "1",
+                  "Odstotek": "2",
+                  "Delež": "3",
+                  "Vse": "4"}
+
+        for (text, value) in values.items():
+            tk.Radiobutton(self.left_frame, text=text, variable=v,
+                           value=value, indicator=0,
+                           background="light blue").pack(fill=X, ipady=5)
+
 
     # -----------------------
     # TABELA
@@ -124,28 +149,6 @@ class DohodninarApp:
             e1.destroy()
             e2.destroy()
 
-    # -----------------------
-    # IZRAČUN DAVKA
-    # -----------------------
-    def calculate_tax(self, income, allowance, brackets):
-        taxable = max(0, income - allowance)
-        tax = Decimal("0")
-        previous_limit = Decimal("0")
-
-        for limit, rate in brackets:
-            if taxable > limit:
-                tax += (limit - previous_limit) * rate
-                previous_limit = limit
-            else:
-                tax += (taxable - previous_limit) * rate
-                return tax
-
-        # če presega zadnji razred
-        if taxable > previous_limit:
-            tax += (taxable - previous_limit) * brackets[-1][1]
-
-        return tax
-
     def new_brackets(self):
         new_brackets = []
 
@@ -169,27 +172,90 @@ class DohodninarApp:
     def update_plot(self, brackets, allowance):
         self.ax.clear()
 
+        # x_vals, y_vals = self.draw_cash_rate(brackets, allowance)
+        x_vals, y_vals = self.draw_share_rate(brackets, allowance)
+
+        # ---- Fiksna spodnja meja 0 ----
+        max_tax = max(y_vals) if y_vals else 1
+        self.ax.set_ylim(bottom=0)
+        self.ax.set_xlim(left=0)
+
+        # ---- DESNA OS kot sekundarna skala ----
+        if hasattr(self, "ax2"):
+            self.ax2.remove()
+
+        self.ax2 = self.ax.secondary_yaxis(
+            'right',
+            functions=(
+                lambda y: (y / max_tax) * 100,
+                lambda p: (p / 100) * max_tax
+            )
+        )
+
+        self.ax2.set_ylabel("Obremenitev (%)")
+        self.ax2.set_yticklabels([f"{i * 10}%" for i in range(11)])
+        self.ax2.set_yticks(range(0, 101, 10))
+
+        self.x_vals = x_vals
+        self.y_vals = y_vals
+
+        self.canvas.draw()
+
+    def draw_cash_rate(self, brackets, allowance):
+        # self.ax.clear()
+
         if not brackets:
             return
 
-        max_income = float(brackets[-1][0]) * 1.2
+        x_vals, y_vals = calculate_tax_values(allowance, brackets)
 
-        x_vals = []
-        y_vals = []
-
-        income = Decimal("0")
-        step = max_income / 200
-
-        while income <= max_income:
-            tax = self.calculate_tax(income, allowance, brackets)
-            x_vals.append(float(income))
-            y_vals.append(float(tax))
-            income += Decimal(step)
-
+        # Izris
         self.ax.plot(x_vals, y_vals)
+        # self.ax.fill_between(x_vals, y_vals, 0, alpha=0.3)
+
+        return x_vals, y_vals
+
+    def draw_share_rate(self, brackets, allowance):
+        # self.ax.clear()
+
+        if not brackets:
+            return
+
+        x_vals, y_vals, x_vals1, y_vals1, x_vals2, y_vals2 = calculate_tax_values(allowance, brackets)
+
+        # Izris
+        self.ax.plot(x_vals1, y_vals1)
+        self.ax.fill_between(x_vals1, y_vals1, 0, alpha=0.3)
+        self.ax.plot(x_vals, y_vals)
+        self.ax.plot(x_vals2, y_vals2)
+
+        return x_vals, y_vals
+
+    def first_ax(self):
+
         self.ax.set_title("Progresivna dohodnina")
         self.ax.set_xlabel("Bruto dohodek (€)")
         self.ax.set_ylabel("Dohodnina (€)")
+
+    def plot_effective_rate(self):
+        if not self.x_vals or not self.y_vals:
+            return
+
+        # izračun efektivne stopnje
+        rates = []
+        for x, y in zip(self.x_vals, self.y_vals):
+            if x > 0:
+                rates.append((y / x) * 100)
+            else:
+                rates.append(0)
+
+        # če desna os še ne obstaja, jo ustvari
+        if not hasattr(self, "ax2"):
+            return
+
+        # nariši krivuljo na desni osi
+        self.ax2.plot(self.x_vals, rates)
+
         self.canvas.draw()
 
     # -----------------------
@@ -217,21 +283,9 @@ class DohodninarApp:
         except Exception as e:
             messagebox.showerror("Napaka", str(e))
 
-    def slo_razredi(self):
-        """
-        Vnese slovenske dohodninske razrede (letna lestvica)
-        in nastavi splošno olajšavo.
-        """
-
-        # ---- Slovenska dohodninska lestvica ----
-        # (meja razreda, stopnja %)
-        slo_brackets = [
-            ("8500.00", "16.00"),
-            ("25000.00", "26.00"),
-            ("50000.00", "33.00"),
-            ("72000.00", "39.00"),
-            ("100000.00", "50.00"),
-        ]
+    def vnesi_slo_razrede(self):
+        # Vnese slovenske dohodninske razrede (letna lestvica)
+        # in nastavi splošno olajšavo.
 
         # Splošna olajšava (osnovna)
         splosna_olajsava = "5000.00"
