@@ -8,12 +8,13 @@ import tax_calculator
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from tax_calculator import calculate_tax_in_cash, slo_brackets, calculate_tax_values
+from tax_calculator import slo_brackets, calculate_tax_values
 
 
 class DohodninarApp:
 
     def __init__(self, root):
+        self.prikaz_var = None
         self.root = root
         self.root.title("Dohodninar")
         self.root.geometry("1100x650")
@@ -107,7 +108,7 @@ class DohodninarApp:
         grph_frame = ttk.Frame(self.left_frame)
         grph_frame.pack(fill="x", pady=10)
 
-        v = tk.StringVar(self.left_frame, value="4")
+        self.prikaz_var = tk.StringVar(self.left_frame, value="4")
 
         values = {"Znesek": "1",
                   "Odstotek": "2",
@@ -115,9 +116,11 @@ class DohodninarApp:
                   "Vse": "4"}
 
         for (text, value) in values.items():
-            tk.Radiobutton(self.left_frame, text=text, variable=v,
+            tk.Radiobutton(self.left_frame, text=text, variable=self.prikaz_var,
                            value=value, indicator=0,
-                           background="light blue").pack(fill=X, ipady=5)
+                           background="light blue").pack(side=tk.LEFT)
+
+        self.prikaz_var.set("4")
 
 
     # -----------------------
@@ -172,7 +175,6 @@ class DohodninarApp:
     def update_plot(self, brackets, allowance):
         self.ax.clear()
 
-        # x_vals, y_vals = self.draw_cash_rate(brackets, allowance)
         x_vals, y_vals = self.draw_share_rate(brackets, allowance)
 
         # ---- Fiksna spodnja meja 0 ----
@@ -201,20 +203,6 @@ class DohodninarApp:
 
         self.canvas.draw()
 
-    def draw_cash_rate(self, brackets, allowance):
-        # self.ax.clear()
-
-        if not brackets:
-            return
-
-        x_vals, y_vals = calculate_tax_values(allowance, brackets)
-
-        # Izris
-        self.ax.plot(x_vals, y_vals)
-        # self.ax.fill_between(x_vals, y_vals, 0, alpha=0.3)
-
-        return x_vals, y_vals
-
     def draw_share_rate(self, brackets, allowance):
         # self.ax.clear()
 
@@ -222,12 +210,21 @@ class DohodninarApp:
             return
 
         x_vals, y_vals, x_vals1, y_vals1, x_vals2, y_vals2 = calculate_tax_values(allowance, brackets)
+        izbira = self.prikaz_var.get()
 
         # Izris
-        self.ax.plot(x_vals1, y_vals1)
-        self.ax.fill_between(x_vals1, y_vals1, 0, alpha=0.3)
-        self.ax.plot(x_vals, y_vals)
-        self.ax.plot(x_vals2, y_vals2)
+        if izbira == "1" or izbira == "4":
+            self.ax.plot(x_vals, y_vals)
+        if izbira == "2" or izbira == "4":
+            self.ax.plot(x_vals1, y_vals1)
+            self.ax.fill_between(x_vals1, y_vals1, 0, alpha=0.3)
+        if izbira == "3" or izbira == "4":
+            self.ax.plot(x_vals2, y_vals2)
+
+        # self.ax.plot(x_vals1, y_vals1)
+        # self.ax.fill_between(x_vals1, y_vals1, 0, alpha=0.3)
+        # self.ax.plot(x_vals, y_vals)
+        # self.ax.plot(x_vals2, y_vals2)
 
         return x_vals, y_vals
 

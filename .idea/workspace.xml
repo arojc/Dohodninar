@@ -4,8 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="606b646d-db75-42d7-a9dd-4f0353d7dc84" name="Changes" comment="Prva verzija Dohodninar">
-      <change afterPath="$PROJECT_DIR$/tax_calculator.py" afterDir="false" />
+    <list default="true" id="606b646d-db75-42d7-a9dd-4f0353d7dc84" name="Changes" comment="Dodan izris za stopnjo in delez.">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
@@ -33,13 +32,13 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "Python.main.executor": "Run",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "master"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Python.main.executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;
   }
-}]]></component>
+}</component>
   <component name="RunManager">
     <configuration name="main" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
       <module name="Dohodninar" />
@@ -88,7 +87,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772559363743</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Dodan izris za stopnjo in delez.">
+      <option name="closed" value="true" />
+      <created>1772703547957</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1772703547957</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -104,7 +111,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="Prva verzija Dohodninar" />
-    <option name="LAST_COMMIT_MESSAGE" value="Prva verzija Dohodninar" />
+    <MESSAGE value="Dodan izris za stopnjo in delez." />
+    <option name="LAST_COMMIT_MESSAGE" value="Dodan izris za stopnjo in delez." />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
