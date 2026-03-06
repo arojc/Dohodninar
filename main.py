@@ -20,6 +20,7 @@ class DohodninarApp:
         self.root.geometry("1100x650")
 
         self.rows = []
+        self.rows1 = []
 
         self.create_layout()
         self.create_plot()
@@ -60,55 +61,99 @@ class DohodninarApp:
     # LAYOUT
     # -----------------------
     def create_layout(self):
-        self.left_frame = ttk.Frame(self.root, padding=10)
-        self.left_frame.pack(side="left", fill="y")
+
+        #region Frames
+        self.left_master_frame = ttk.Frame(self.root, padding=10)
+        self.left_master_frame.pack(side="left", fill="y")
+
+        self.left_frame1 = ttk.Frame(self.left_master_frame, padding=10)
+        self.left_frame1.pack(side=tk.TOP, fill="y")
+
+        self.left_frame2 = ttk.Frame(self.left_master_frame, padding=10)
+        self.left_frame2.pack(side=tk.TOP, fill="y")
+
+        self.left_frame_last = ttk.Frame(self.left_master_frame, padding=10)
+        self.left_frame_last.pack(side=tk.BOTTOM, fill="y")
 
         self.right_frame = ttk.Frame(self.root)
         self.right_frame.pack(side="right", fill="both", expand=True)
+        #endregion
 
         vcmd = (self.root.register(self.validate_decimal), "%P")
 
-        ttk.Label(self.left_frame, text="Splošna olajšava (€)").pack(anchor="w")
+        #region first frame
+        ttk.Label(self.left_frame1, text="Splošna olajšava (€)").pack(anchor="w")
 
         self.general_allowance = ttk.Entry(
-            self.left_frame, validate="key", validatecommand=vcmd
+            self.left_frame1, validate="key", validatecommand=vcmd
         )
         self.general_allowance.pack(fill="x", pady=5)
         self.general_allowance.bind("<FocusOut>", self.format_two_decimals)
 
-        ttk.Separator(self.left_frame).pack(fill="x", pady=10)
+        ttk.Separator(self.left_frame1).pack(fill="x", pady=10)
 
-        ttk.Label(self.left_frame, text="Dohodninski razredi").pack(anchor="w")
+        ttk.Label(self.left_frame1, text="Dohodninski razredi").pack(anchor="w")
 
-        self.table_frame = ttk.Frame(self.left_frame)
-        self.table_frame.pack(fill="both", expand=True)
+        self.table_frame1 = ttk.Frame(self.left_frame1)
+        self.table_frame1.pack(fill="both", expand=True)
 
-        ttk.Label(self.table_frame, text="Meja (€)").grid(row=0, column=0)
-        ttk.Label(self.table_frame, text="Stopnja (%)").grid(row=0, column=1)
+        ttk.Label(self.table_frame1, text="Meja (€)").grid(row=0, column=0)
+        ttk.Label(self.table_frame1, text="Stopnja (%)").grid(row=0, column=1)
 
-        btn_frame = ttk.Frame(self.left_frame)
-        btn_frame.pack(fill="x", pady=10)
+        btn_frame1 = ttk.Frame(self.left_frame1)
+        btn_frame1.pack(fill="x", pady=10)
 
-        ttk.Button(btn_frame, text="Dodaj vrstico", command=self.add_row).pack(
+        ttk.Button(btn_frame1, text="Dodaj vrstico", command=self.add_row).pack(
             side="left", expand=True, fill="x", padx=2
         )
-        ttk.Button(btn_frame, text="Briši zadnjo", command=self.remove_row).pack(
+        ttk.Button(btn_frame1, text="Briši zadnjo", command=self.remove_row).pack(
             side="left", expand=True, fill="x", padx=2
         )
+        #endregion
+
+        #region second frame
+        ttk.Label(self.left_frame2, text="Splošna olajšava (€)").pack(anchor="w")
+
+        self.general_allowance = ttk.Entry(
+            self.left_frame2, validate="key", validatecommand=vcmd
+        )
+        self.general_allowance.pack(fill="x", pady=5)
+        self.general_allowance.bind("<FocusOut>", self.format_two_decimals)
+
+        ttk.Separator(self.left_frame2).pack(fill="x", pady=10)
+
+        ttk.Label(self.left_frame2, text="Dohodninski razredi").pack(anchor="w")
+
+        self.table_frame2 = ttk.Frame(self.left_frame2)
+        self.table_frame2.pack(fill="both", expand=True)
+
+        ttk.Label(self.table_frame2, text="Meja (€)").grid(row=0, column=0)
+        ttk.Label(self.table_frame2, text="Stopnja (%)").grid(row=0, column=1)
+
+        btn_frame2 = ttk.Frame(self.left_frame2)
+        btn_frame2.pack(fill="x", pady=10)
+
+        ttk.Button(btn_frame2, text="Dodaj vrstico", command=self.add_row).pack(
+            side="left", expand=True, fill="x", padx=2
+        )
+        ttk.Button(btn_frame2, text="Briši zadnjo", command=self.remove_row).pack(
+            side="left", expand=True, fill="x", padx=2
+        )
+        #endregion
 
         self.prikazi()
 
-        ttk.Button(self.left_frame, text="Izvrši", command=self.execute).pack(
+        ttk.Button(self.left_frame_last, text="Izvrši", command=self.execute).pack(
             fill="x", pady=10
         )
 
     def prikazi(self):
 
         #prikazi
-        grph_frame = ttk.Frame(self.left_frame)
+        grph_frame = ttk.Frame(self.left_frame_last)
         grph_frame.pack(fill="x", pady=10)
 
-        self.prikaz_var = tk.StringVar(self.left_frame, value="4")
+        self.prikaz_var = tk.StringVar(self.left_frame_last, value="4")
 
         values = {"Znesek": "1",
                   "Odstotek": "2",
@@ -116,7 +161,7 @@ class DohodninarApp:
                   "Vse": "4"}
 
         for (text, value) in values.items():
-            tk.Radiobutton(self.left_frame, text=text, variable=self.prikaz_var,
+            tk.Radiobutton(self.left_frame_last, text=text, variable=self.prikaz_var,
                            value=value, indicator=0,
                            background="light blue").pack(side=tk.LEFT)
 
@@ -132,10 +177,10 @@ class DohodninarApp:
         row_index = len(self.rows) + 1
 
         entry_limit = ttk.Entry(
-            self.table_frame, validate="key", validatecommand=vcmd
+            self.table_frame1, validate="key", validatecommand=vcmd
         )
         entry_rate = ttk.Entry(
-            self.table_frame, validate="key", validatecommand=vcmd
+            self.table_frame1, validate="key", validatecommand=vcmd
         )
 
         entry_limit.grid(row=row_index, column=0, padx=5, pady=2)
@@ -214,17 +259,12 @@ class DohodninarApp:
 
         # Izris
         if izbira == "1" or izbira == "4":
-            self.ax.plot(x_vals, y_vals)
+            self.ax.plot(x_vals, y_vals, linestyle="dotted", color="red")
         if izbira == "2" or izbira == "4":
-            self.ax.plot(x_vals1, y_vals1)
-            self.ax.fill_between(x_vals1, y_vals1, 0, alpha=0.3)
+            self.ax.plot(x_vals1, y_vals1, linestyle="dashed", color="red")
+            self.ax.fill_between(x_vals1, y_vals1, 0, alpha=0.2, color="red")
         if izbira == "3" or izbira == "4":
-            self.ax.plot(x_vals2, y_vals2)
-
-        # self.ax.plot(x_vals1, y_vals1)
-        # self.ax.fill_between(x_vals1, y_vals1, 0, alpha=0.3)
-        # self.ax.plot(x_vals, y_vals)
-        # self.ax.plot(x_vals2, y_vals2)
+            self.ax.plot(x_vals2, y_vals2, color="red")
 
         return x_vals, y_vals
 
@@ -281,15 +321,11 @@ class DohodninarApp:
             messagebox.showerror("Napaka", str(e))
 
     def vnesi_slo_razrede(self):
-        # Vnese slovenske dohodninske razrede (letna lestvica)
-        # in nastavi splošno olajšavo.
-
-        # Splošna olajšava (osnovna)
         splosna_olajsava = "5000.00"
 
         # # ---- Počisti obstoječe vrstice ----
-        # while self.rows:
-        #     self.remove_row()
+        while self.rows:
+            self.remove_row()
 
         # ---- Nastavi splošno olajšavo ----
         self.general_allowance.delete(0, tk.END)
