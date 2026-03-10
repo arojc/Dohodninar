@@ -4,12 +4,11 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="606b646d-db75-42d7-a9dd-4f0353d7dc84" name="Changes" comment="Usposobljeni radioknofi">
-      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.agent.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.ask.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/copilot.data.migration.edit.xml" afterDir="false" />
+    <list default="true" id="606b646d-db75-42d7-a9dd-4f0353d7dc84" name="Changes" comment="Dodan razred davcni_sistem.py">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/davcni_sistem.py" beforeDir="false" afterPath="$PROJECT_DIR$/davcni_sistem.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tax_calculator.py" beforeDir="false" afterPath="$PROJECT_DIR$/tax_calculator.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -107,7 +106,15 @@
       <option name="project" value="LOCAL" />
       <updated>1772723758785</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Dodan razred davcni_sistem.py">
+      <option name="closed" value="true" />
+      <created>1772823328853</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1772823328853</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -125,7 +132,8 @@
     <MESSAGE value="Prva verzija Dohodninar" />
     <MESSAGE value="Dodan izris za stopnjo in delez." />
     <MESSAGE value="Usposobljeni radioknofi" />
-    <option name="LAST_COMMIT_MESSAGE" value="Usposobljeni radioknofi" />
+    <MESSAGE value="Dodan razred davcni_sistem.py" />
+    <option name="LAST_COMMIT_MESSAGE" value="Dodan razred davcni_sistem.py" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

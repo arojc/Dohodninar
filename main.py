@@ -1,14 +1,14 @@
+import sys
 import tkinter as tk
 from tkinter import ttk, messagebox, X
 from decimal import Decimal, InvalidOperation
 import matplotlib
-
-import tax_calculator
+from davcni_sistem import DavcniSistemi as ds
+import davcni_sistem
 
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
-from tax_calculator import slo_brackets, calculate_tax_values
 
 
 class DohodninarApp:
@@ -20,12 +20,15 @@ class DohodninarApp:
         self.root.geometry("1100x650")
 
         self.rows = []
-        self.rows1 = []
+
+        self.systems = ds()
+        self.systems.splosna_olajsava = 5000
+        # self.systems.razredi = ds.slo_brackets
 
         self.create_layout()
         self.create_plot()
-        self.vnesi_slo_razrede()
-        self.execute()
+        self.update_plot()
+        # self.execute()
 
     # -----------------------
     # VALIDACIJA
@@ -66,12 +69,6 @@ class DohodninarApp:
         self.left_master_frame = ttk.Frame(self.root, padding=10)
         self.left_master_frame.pack(side="left", fill="y")
 
-        self.left_frame1 = ttk.Frame(self.left_master_frame, padding=10)
-        self.left_frame1.pack(side=tk.TOP, fill="y")
-
-        self.left_frame2 = ttk.Frame(self.left_master_frame, padding=10)
-        self.left_frame2.pack(side=tk.TOP, fill="y")
-
         self.left_frame_last = ttk.Frame(self.left_master_frame, padding=10)
         self.left_frame_last.pack(side=tk.BOTTOM, fill="y")
 
@@ -79,28 +76,36 @@ class DohodninarApp:
         self.right_frame.pack(side="right", fill="both", expand=True)
         #endregion
 
-        vcmd = (self.root.register(self.validate_decimal), "%P")
+        self.prikazi()
 
-        #region first frame
-        ttk.Label(self.left_frame1, text="Splošna olajšava (€)").pack(anchor="w")
-
-        self.general_allowance = ttk.Entry(
-            self.left_frame1, validate="key", validatecommand=vcmd
+        ttk.Button(self.left_frame_last, text="Izvrši", command=self.update_plot).pack(
+            fill="x", pady=10
         )
-        self.general_allowance.pack(fill="x", pady=5)
-        self.general_allowance.bind("<FocusOut>", self.format_two_decimals)
 
-        ttk.Separator(self.left_frame1).pack(fill="x", pady=10)
+    def tsframe(self, system, vcmd):
 
-        ttk.Label(self.left_frame1, text="Dohodninski razredi").pack(anchor="w")
+        the_frame = ttk.Frame(self.left_master_frame, padding=10)
+        the_frame.pack(side=tk.TOP, fill="y")
 
-        self.table_frame1 = ttk.Frame(self.left_frame1)
-        self.table_frame1.pack(fill="both", expand=True)
+        ttk.Label(the_frame, text="Splošna olajšava (€)").pack(anchor="w")
 
-        ttk.Label(self.table_frame1, text="Meja (€)").grid(row=0, column=0)
-        ttk.Label(self.table_frame1, text="Stopnja (%)").grid(row=0, column=1)
+        the_frame.general_allowance = ttk.Entry(
+            the_frame, validate="key", validatecommand=vcmd
+        )
+        the_frame.general_allowance.pack(fill="x", pady=5)
+        the_frame.general_allowance.bind("<FocusOut>", self.format_two_decimals)
 
-        btn_frame1 = ttk.Frame(self.left_frame1)
+        ttk.Separator(the_frame).pack(fill="x", pady=10)
+
+        ttk.Label(the_frame, text="Dohodninski razredi").pack(anchor="w")
+
+        table_frame1 = ttk.Frame(the_frame)
+        table_frame1.pack(fill="both", expand=True)
+
+        ttk.Label(table_frame1, text="Meja (€)").grid(row=0, column=0)
+        ttk.Label(table_frame1, text="Stopnja (%)").grid(row=0, column=1)
+
+        btn_frame1 = ttk.Frame(the_frame)
         btn_frame1.pack(fill="x", pady=10)
 
         ttk.Button(btn_frame1, text="Dodaj vrstico", command=self.add_row).pack(
@@ -109,43 +114,8 @@ class DohodninarApp:
         ttk.Button(btn_frame1, text="Briši zadnjo", command=self.remove_row).pack(
             side="left", expand=True, fill="x", padx=2
         )
-        #endregion
 
-        #region second frame
-        ttk.Label(self.left_frame2, text="Splošna olajšava (€)").pack(anchor="w")
-
-        self.general_allowance = ttk.Entry(
-            self.left_frame2, validate="key", validatecommand=vcmd
-        )
-        self.general_allowance.pack(fill="x", pady=5)
-        self.general_allowance.bind("<FocusOut>", self.format_two_decimals)
-
-        ttk.Separator(self.left_frame2).pack(fill="x", pady=10)
-
-        ttk.Label(self.left_frame2, text="Dohodninski razredi").pack(anchor="w")
-
-        self.table_frame2 = ttk.Frame(self.left_frame2)
-        self.table_frame2.pack(fill="both", expand=True)
-
-        ttk.Label(self.table_frame2, text="Meja (€)").grid(row=0, column=0)
-        ttk.Label(self.table_frame2, text="Stopnja (%)").grid(row=0, column=1)
-
-        btn_frame2 = ttk.Frame(self.left_frame2)
-        btn_frame2.pack(fill="x", pady=10)
-
-        ttk.Button(btn_frame2, text="Dodaj vrstico", command=self.add_row).pack(
-            side="left", expand=True, fill="x", padx=2
-        )
-        ttk.Button(btn_frame2, text="Briši zadnjo", command=self.remove_row).pack(
-            side="left", expand=True, fill="x", padx=2
-        )
-        #endregion
-
-        self.prikazi()
-
-        ttk.Button(self.left_frame_last, text="Izvrši", command=self.execute).pack(
-            fill="x", pady=10
-        )
+        return the_frame
 
     def prikazi(self):
 
@@ -197,9 +167,6 @@ class DohodninarApp:
             e1.destroy()
             e2.destroy()
 
-    def new_brackets(self):
-        new_brackets = []
-
     # -----------------------
     # GRAF
     # -----------------------
@@ -217,10 +184,10 @@ class DohodninarApp:
         self.canvas = FigureCanvasTkAgg(self.figure, master=self.right_frame)
         self.canvas.get_tk_widget().pack(fill="both", expand=True)
 
-    def update_plot(self, brackets, allowance):
+    def update_plot(self):
         self.ax.clear()
 
-        x_vals, y_vals = self.draw_share_rate(brackets, allowance)
+        x_vals, y_vals = self.draw_share_rate()
 
         # ---- Fiksna spodnja meja 0 ----
         max_tax = max(y_vals) if y_vals else 1
@@ -248,96 +215,45 @@ class DohodninarApp:
 
         self.canvas.draw()
 
-    def draw_share_rate(self, brackets, allowance):
-        # self.ax.clear()
+    def draw_share_rate(self):
+        self.ax.clear()
 
-        if not brackets:
-            return
+        x_vals_a = []
+        y_vals1_a = []
 
-        x_vals, y_vals, x_vals1, y_vals1, x_vals2, y_vals2 = calculate_tax_values(allowance, brackets)
+        taxsys1 = davcni_sistem.DavcniSistem(5000, ds.slo_brackets)
+
+        x_vals, y_vals1, y_vals2, y_vals3 = taxsys1.get_taxes()
         izbira = self.prikaz_var.get()
 
+        self.ax.plot(x_vals, y_vals1, linestyle="dotted", color="red")
+        self.ax.plot(x_vals, y_vals2, color="red")
+        self.ax.plot(x_vals, y_vals3, linestyle="dashed", color="red")
+        self.ax.fill_between(x_vals, y_vals3, 0, alpha=0.2, color="red")
+
+        taxsys2 = davcni_sistem.DavcniSistem(5000, ds.hr_brackets)
+        x_vals_hr, y_vals1_hr, y_vals2_hr, y_vals3_hr = taxsys2.get_taxes()
+
+        self.ax.plot(x_vals_hr, y_vals1_hr, linestyle="dotted", color="blue")
+        self.ax.plot(x_vals_hr, y_vals2_hr, color="blue")
+        self.ax.plot(x_vals_hr, y_vals3_hr, linestyle="dashed", color="blue")
+        self.ax.fill_between(x_vals_hr, y_vals3_hr, 0, alpha=0.2, color="blue")
+
         # Izris
-        if izbira == "1" or izbira == "4":
-            self.ax.plot(x_vals, y_vals, linestyle="dotted", color="red")
-        if izbira == "2" or izbira == "4":
-            self.ax.plot(x_vals1, y_vals1, linestyle="dashed", color="red")
-            self.ax.fill_between(x_vals1, y_vals1, 0, alpha=0.2, color="red")
-        if izbira == "3" or izbira == "4":
-            self.ax.plot(x_vals2, y_vals2, color="red")
+        # if izbira == "1" or izbira == "4":
+        #     self.ax.plot(x_vals, y_vals1, linestyle="dotted", color="red")
+        # if izbira == "2" or izbira == "4":
+        #     self.ax.plot(x_vals, y_vals2, color="red")
+        # if izbira == "3" or izbira == "4":
+        #     self.ax.plot(x_vals, y_vals3, linestyle="dashed", color="red")
+        #     self.ax.fill_between(x_vals, y_vals3, 0, alpha=0.2, color="red")
 
-        return x_vals, y_vals
 
-    def first_ax(self):
-
-        self.ax.set_title("Progresivna dohodnina")
-        self.ax.set_xlabel("Bruto dohodek (€)")
-        self.ax.set_ylabel("Dohodnina (€)")
-
-    def plot_effective_rate(self):
-        if not self.x_vals or not self.y_vals:
-            return
-
-        # izračun efektivne stopnje
-        rates = []
-        for x, y in zip(self.x_vals, self.y_vals):
-            if x > 0:
-                rates.append((y / x) * 100)
-            else:
-                rates.append(0)
-
-        # če desna os še ne obstaja, jo ustvari
-        if not hasattr(self, "ax2"):
-            return
-
-        # nariši krivuljo na desni osi
-        self.ax2.plot(self.x_vals, rates)
-
-        self.canvas.draw()
+        return x_vals, y_vals1
 
     # -----------------------
     # IZVRŠI
     # -----------------------
-    def execute(self):
-        try:
-            allowance = Decimal(self.general_allowance.get() or "0")
-
-            brackets = []
-            for e_limit, e_rate in self.rows:
-                if e_limit.get() and e_rate.get():
-                    limit = Decimal(e_limit.get())
-                    rate = Decimal(e_rate.get()) / 100
-                    brackets.append((limit, rate))
-
-            brackets.sort(key=lambda x: x[0])
-
-            if not brackets:
-                messagebox.showerror("Napaka", "Vnesi vsaj en razred.")
-                return
-
-            self.update_plot(brackets, allowance)
-
-        except Exception as e:
-            messagebox.showerror("Napaka", str(e))
-
-    def vnesi_slo_razrede(self):
-        splosna_olajsava = "5000.00"
-
-        # # ---- Počisti obstoječe vrstice ----
-        while self.rows:
-            self.remove_row()
-
-        # ---- Nastavi splošno olajšavo ----
-        self.general_allowance.delete(0, tk.END)
-        self.general_allowance.insert(0, splosna_olajsava)
-
-        # ---- Vnesi nove razrede ----
-        for meja, stopnja in slo_brackets:
-            self.add_row()
-            entry_limit, entry_rate = self.rows[-1]
-
-            entry_limit.insert(0, meja)
-            entry_rate.insert(0, stopnja)
 
 
 if __name__ == "__main__":
