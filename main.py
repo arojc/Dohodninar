@@ -4,11 +4,12 @@ from tkinter import ttk, messagebox, X
 from decimal import Decimal, InvalidOperation
 import matplotlib
 from davcni_sistem import DavcniSistemi as ds
-import davcni_sistem
 
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+
+from gui import TaxSystem
 
 
 class DohodninarApp:
@@ -65,9 +66,17 @@ class DohodninarApp:
     # -----------------------
     def create_layout(self):
 
+        vcmd = (self.root.register(self.validate_decimal), "%P")
+
         #region Frames
         self.left_master_frame = ttk.Frame(self.root, padding=10)
         self.left_master_frame.pack(side="left", fill="y")
+
+        # self.firsts_frame = self.tsframe(vcmd)
+        # self.second_frame = self.tsframe(vcmd)
+        self.firsts_frame = TaxSystem(self.left_master_frame)
+        self.second_frame = TaxSystem(self.left_master_frame)
+        self.third_frame = TaxSystem(self.left_master_frame)
 
         self.left_frame_last = ttk.Frame(self.left_master_frame, padding=10)
         self.left_frame_last.pack(side=tk.BOTTOM, fill="y")
@@ -82,11 +91,21 @@ class DohodninarApp:
             fill="x", pady=10
         )
 
-    def tsframe(self, system, vcmd):
+    def tsframe(self, vcmd):
 
         the_frame = ttk.Frame(self.left_master_frame, padding=10)
         the_frame.pack(side=tk.TOP, fill="y")
 
+        #region ID
+        ttk.Label(the_frame, text="ID").pack(anchor="w")
+        the_frame.id = ttk.Entry(
+            the_frame, validate="key", validatecommand=vcmd
+        )
+        the_frame.id.pack(fill="x", pady=5)
+        the_frame.id.bind("<FocusOut>", self.format_two_decimals)
+        #endregion
+
+        #region Allowance
         ttk.Label(the_frame, text="Splošna olajšava (€)").pack(anchor="w")
 
         the_frame.general_allowance = ttk.Entry(
@@ -94,9 +113,11 @@ class DohodninarApp:
         )
         the_frame.general_allowance.pack(fill="x", pady=5)
         the_frame.general_allowance.bind("<FocusOut>", self.format_two_decimals)
+        #endregion
 
         ttk.Separator(the_frame).pack(fill="x", pady=10)
 
+        #region Brackets
         ttk.Label(the_frame, text="Dohodninski razredi").pack(anchor="w")
 
         table_frame1 = ttk.Frame(the_frame)
@@ -114,6 +135,7 @@ class DohodninarApp:
         ttk.Button(btn_frame1, text="Briši zadnjo", command=self.remove_row).pack(
             side="left", expand=True, fill="x", padx=2
         )
+        #endregion
 
         return the_frame
 
@@ -221,35 +243,32 @@ class DohodninarApp:
         x_vals_a = []
         y_vals1_a = []
 
-        taxsys1 = davcni_sistem.DavcniSistem(5000, ds.slo_brackets)
+        x_vals, y_vals1 = self.draw_a_system(ds.sistemi[0], "red")
+        self.draw_a_system(ds.sistemi[1], "blue")
 
-        x_vals, y_vals1, y_vals2, y_vals3 = taxsys1.get_taxes()
-        izbira = self.prikaz_var.get()
-
-        self.ax.plot(x_vals, y_vals1, linestyle="dotted", color="red")
-        self.ax.plot(x_vals, y_vals2, color="red")
-        self.ax.plot(x_vals, y_vals3, linestyle="dashed", color="red")
-        self.ax.fill_between(x_vals, y_vals3, 0, alpha=0.2, color="red")
-
-        taxsys2 = davcni_sistem.DavcniSistem(5000, ds.hr_brackets)
-        x_vals_hr, y_vals1_hr, y_vals2_hr, y_vals3_hr = taxsys2.get_taxes()
-
-        self.ax.plot(x_vals_hr, y_vals1_hr, linestyle="dotted", color="blue")
-        self.ax.plot(x_vals_hr, y_vals2_hr, color="blue")
-        self.ax.plot(x_vals_hr, y_vals3_hr, linestyle="dashed", color="blue")
-        self.ax.fill_between(x_vals_hr, y_vals3_hr, 0, alpha=0.2, color="blue")
-
-        # Izris
-        # if izbira == "1" or izbira == "4":
-        #     self.ax.plot(x_vals, y_vals1, linestyle="dotted", color="red")
-        # if izbira == "2" or izbira == "4":
-        #     self.ax.plot(x_vals, y_vals2, color="red")
-        # if izbira == "3" or izbira == "4":
-        #     self.ax.plot(x_vals, y_vals3, linestyle="dashed", color="red")
-        #     self.ax.fill_between(x_vals, y_vals3, 0, alpha=0.2, color="red")
-
+        # taxsys2 = davcni_sistem.DavcniSistem(5000, ds.hr_brackets)
+        # self.draw_a_system(taxsys2, "blue")
 
         return x_vals, y_vals1
+
+    def draw_a_system(self, ts, color):
+
+        x_vals, y_vals1, y_vals2, y_vals3 = ts.get_taxes()
+        # izbira = self.prikaz_var.get()
+        izbira = "4"
+
+        if izbira == "1" or izbira == "4":
+            self.ax.plot(x_vals, y_vals1, linestyle="dotted", color=color)
+
+        if izbira == "2" or izbira == "4":
+            self.ax.plot(x_vals, y_vals2, color=color)
+
+        if izbira == "3" or izbira == "4":
+            self.ax.plot(x_vals, y_vals3, linestyle="dashed", color=color)
+            self.ax.fill_between(x_vals, y_vals3, 0, alpha=0.2, color=color)
+
+        return x_vals, y_vals1
+
 
     # -----------------------
     # IZVRŠI

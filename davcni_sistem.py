@@ -1,5 +1,4 @@
 import sys
-from decimal import Decimal
 import numpy as np
 
 class DavcniSistemi:
@@ -10,7 +9,10 @@ class DavcniSistemi:
     sistemi = []
 
     def __init__(self):
-        pass
+        taxsys1 = DavcniSistem("slotax", 5000, self.slo_brackets)
+        self.add_system(taxsys1)
+        taxsys2 = DavcniSistem("hrtax", 5000, self.hr_brackets)
+        self.add_system(taxsys2)
 
     def add_system(self, system):
         self.sistemi.append(system)
@@ -33,10 +35,12 @@ class DavcniSistemi:
 
 class DavcniSistem:
 
-    def __init__(self, splosna_olajsava=0.0, razredi=None, stepsn=200):
+    def __init__(self, id, splosna_olajsava=0.0, razredi=None, stepsn=200):
+        self.id = id
         self._splosna_olajsava = splosna_olajsava
         self._razredi = []
         self.nofsteps = 200
+        self.frame = None
 
         if razredi:
             self.razredi = razredi
