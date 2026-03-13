@@ -29,7 +29,6 @@ class DohodninarApp:
         self.create_layout()
         self.create_plot()
         self.update_plot()
-        # self.execute()
 
     # -----------------------
     # VALIDACIJA
@@ -74,9 +73,9 @@ class DohodninarApp:
 
         self.create_scrolling()
 
-        self.firsts_frame = TaxSystem(self.left_subframe)
-        self.second_frame = TaxSystem(self.left_subframe)
-        self.third_frame = TaxSystem(self.left_subframe)
+        self.firsts_frame = TaxSystem(self.left_subframe, self.systems.sistemi[0])
+        self.second_frame = TaxSystem(self.left_subframe, self.systems.sistemi[1])
+        self.third_frame = TaxSystem(self.left_subframe, self.systems.sistemi[2])
 
         self.left_frame_last = ttk.Frame(self.left_subframe, padding=10)
         self.left_frame_last.pack(side=tk.BOTTOM, fill="y")
@@ -92,8 +91,6 @@ class DohodninarApp:
         )
 
     def create_scrolling(self):
-
-        # scroll plastdavcni_sistem
         canvas = tk.Canvas(self.left_master_frame)
         scrollbar = ttk.Scrollbar(self.left_master_frame, orient="vertical", command=canvas.yview)
 
@@ -211,29 +208,16 @@ class DohodninarApp:
     def draw_share_rate(self):
         self.ax.clear()
 
-        x_vals_a = []
-        y_vals1_a = []
-
         graph_data = self.systems.get_graph_data()
 
-        x_vals, y_vals1 = self.draw_a_system1(graph_data[0], "red")
-        self.draw_a_system1(graph_data[1], "green")
-        self.draw_a_system1(graph_data[2], "blue")
-
-        # x_vals, y_vals1 = self.draw_a_system(ds.sistemi[0], "red")
-        # self.draw_a_system(ds.sistemi[1], "green")
-        # self.draw_a_system(ds.sistemi[2], "blue")
-
-        # taxsys2 = davcni_sistem.DavcniSistem(5000, ds.hr_brackets)
-        # self.draw_a_system(taxsys2, "blue")
+        x_vals, y_vals1 = self.draw_a_system(graph_data[0], "red")
+        self.draw_a_system(graph_data[1], "green")
+        self.draw_a_system(graph_data[2], "blue")
 
         return x_vals, y_vals1
 
-    def draw_a_system1(self, ts, color):
-
-        # x_vals, y_vals1, y_vals2, y_vals3 = ts.get_taxes(self.systems.get_max_income())
-        # izbira = self.prikaz_var.get()
-        izbira = "4"
+    def draw_a_system(self, ts, color):
+        izbira = self.prikaz_var.get()
 
         if izbira == "1" or izbira == "4":
             self.ax.plot(ts[0], ts[1], linestyle="dotted", color=color)
@@ -246,24 +230,6 @@ class DohodninarApp:
             self.ax.fill_between(ts[0], ts[3], 0, alpha=0.2, color=color)
 
         return ts[0], ts[1]
-
-    def draw_a_system(self, ts, color):
-
-        x_vals, y_vals1, y_vals2, y_vals3 = ts.get_taxes(self.systems.get_max_income())
-        # izbira = self.prikaz_var.get()
-        izbira = "4"
-
-        if izbira == "1" or izbira == "4":
-            self.ax.plot(x_vals, y_vals1, linestyle="dotted", color=color)
-
-        if izbira == "2" or izbira == "4":
-            self.ax.plot(x_vals, y_vals2, color=color)
-
-        if izbira == "3" or izbira == "4":
-            self.ax.plot(x_vals, y_vals3, linestyle="dashed", color=color)
-            self.ax.fill_between(x_vals, y_vals3, 0, alpha=0.2, color=color)
-
-        return x_vals, y_vals1
 
 
     # -----------------------
