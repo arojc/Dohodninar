@@ -40,7 +40,22 @@ class DavcniSistemi:
         for system in self.sistemi:
             graph_data.append(system.get_taxes(self.max_income))
 
+        self.normalize_em(graph_data)
+
         return graph_data
+
+    def normalize_em(self, graph_data):
+        max_val = 0
+
+        for g in graph_data:
+            max_val = max(max_val, max(g[1]))
+
+        print(f"max_val: {max_val}")
+
+        for g in graph_data:
+            g[2] = [g2 * max_val for g2 in g[2]]
+            g[3] = [g3 * max_val for g3 in g[3]]
+
 
     slo_brackets = [
         (9721.43, 0.16),
@@ -110,23 +125,16 @@ class DavcniSistem:
         return self.calculate_tax_values(self.splosna_olajsava, self.razredi, max_income)
 
     def calculate_tax_values(self, allowance, brackets, max_income):
-        # max_income = brackets[-2][0] * 1.2
-
-        x_vals = []
-        y_vals1 = []
-        y_vals2 = []
-        y_vals3 = []
 
         x_vals = [float(income) for income in range(0, int(max_income) + 1, int(max_income / self.nofsteps))]
 
         y_vals1 = [float(self.calculate_tax_in_cash(income, allowance, brackets)) for income in x_vals]
 
         y_vals2 = np.divide(y_vals1, x_vals)
-        y_vals2 = [y2 * max(y_vals1) for y2 in y_vals2]
 
-        y_vals3 = [float(self.calculate_tax_in_share(income, allowance, brackets) * max(y_vals1)) for income in x_vals]
+        y_vals3 = [float(self.calculate_tax_in_share(income, allowance, brackets)) for income in x_vals]
 
-        return x_vals, y_vals1, y_vals2, y_vals3
+        return [x_vals, y_vals1, y_vals2, y_vals3]
 
     def calculate_tax_in_cash(self, income, allowance, brackets):
         taxable = max(0, float(income) - float(allowance))

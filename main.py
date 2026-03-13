@@ -22,7 +22,7 @@ class DohodninarApp:
         self.root.title("Dohodninar")
         self.root.geometry("1100x650")
 
-        self.rows = []
+        self.sys_frames = []
 
         self.systems = DavcniSistemi()
 
@@ -73,9 +73,8 @@ class DohodninarApp:
 
         self.create_scrolling()
 
-        self.firsts_frame = TaxSystem(self.left_subframe, self.systems.sistemi[0])
-        self.second_frame = TaxSystem(self.left_subframe, self.systems.sistemi[1])
-        self.third_frame = TaxSystem(self.left_subframe, self.systems.sistemi[2])
+        for s in self.systems.sistemi:
+            self.sys_frames.append(TaxSystem(self.left_subframe, s))
 
         self.left_frame_last = ttk.Frame(self.left_subframe, padding=10)
         self.left_frame_last.pack(side=tk.BOTTOM, fill="y")
@@ -129,35 +128,6 @@ class DohodninarApp:
 
 
     # -----------------------
-    # TABELA
-    # -----------------------
-    def add_row(self):
-        vcmd = (self.root.register(self.validate_decimal), "%P")
-
-        row_index = len(self.rows) + 1
-
-        entry_limit = ttk.Entry(
-            self.table_frame1, validate="key", validatecommand=vcmd
-        )
-        entry_rate = ttk.Entry(
-            self.table_frame1, validate="key", validatecommand=vcmd
-        )
-
-        entry_limit.grid(row=row_index, column=0, padx=5, pady=2)
-        entry_rate.grid(row=row_index, column=1, padx=5, pady=2)
-
-        entry_limit.bind("<FocusOut>", self.format_two_decimals)
-        entry_rate.bind("<FocusOut>", self.format_two_decimals)
-
-        self.rows.append((entry_limit, entry_rate))
-
-    def remove_row(self):
-        if self.rows:
-            e1, e2 = self.rows.pop()
-            e1.destroy()
-            e2.destroy()
-
-    # -----------------------
     # GRAF
     # -----------------------
     def create_plot(self):
@@ -175,6 +145,10 @@ class DohodninarApp:
         self.canvas.get_tk_widget().pack(fill="both", expand=True)
 
     def update_plot(self):
+
+        for f in self.sys_frames:
+            f.data_to_system()
+
         self.ax.clear()
 
         x_vals, y_vals = self.draw_share_rate()

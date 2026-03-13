@@ -84,18 +84,18 @@ class TaxSystem():
         meja = ttk.Entry(self.table_frame1)
         stopnja = ttk.Entry(self.table_frame1)
 
-        meja.grid(row=row_index, column=0, padx=5, pady=2, sticky="ew")
-        stopnja.grid(row=row_index, column=1, padx=5, pady=2, sticky="ew")
+        meja.grid(row=row_index+1, column=0, padx=5, pady=2, sticky="ew")
+        stopnja.grid(row=row_index+1, column=1, padx=5, pady=2, sticky="ew")
 
         self.brackets.append((meja, stopnja))
 
     def data_to_system(self):
-        self.the_system.id(self.id.get())
-        self.the_system.splosna_olajsava(self.try_to_compile(self.general_allowance.get()))
+        self.the_system.id = self.id
+        self.the_system.splosna_olajsava = self.try_to_compile(self.general_allowance.get())
 
         new_brackets = []
         for row in self.brackets:
-            new_brackets.append(row)
+            new_brackets.append((float(row[0].get()), float(row[1].get())))
 
         self.the_system.razredi = new_brackets
 
