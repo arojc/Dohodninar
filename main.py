@@ -2,8 +2,10 @@ import sys
 import tkinter as tk
 from tkinter import ttk, messagebox, X
 from decimal import Decimal, InvalidOperation
+from tkinter.constants import *
 import matplotlib
-from davcni_sistem import DavcniSistemi as ds
+
+from davcni_sistem import DavcniSistemi
 
 matplotlib.use("TkAgg")
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -22,9 +24,7 @@ class DohodninarApp:
 
         self.rows = []
 
-        self.systems = ds()
-        self.systems.splosna_olajsava = 5000
-        # self.systems.razredi = ds.slo_brackets
+        self.systems = DavcniSistemi()
 
         self.create_layout()
         self.create_plot()
@@ -72,13 +72,13 @@ class DohodninarApp:
         self.left_master_frame = ttk.Frame(self.root, padding=10)
         self.left_master_frame.pack(side="left", fill="y")
 
-        # self.firsts_frame = self.tsframe(vcmd)
-        # self.second_frame = self.tsframe(vcmd)
-        self.firsts_frame = TaxSystem(self.left_master_frame)
-        self.second_frame = TaxSystem(self.left_master_frame)
-        self.third_frame = TaxSystem(self.left_master_frame)
+        self.create_scrolling()
 
-        self.left_frame_last = ttk.Frame(self.left_master_frame, padding=10)
+        self.firsts_frame = TaxSystem(self.left_subframe)
+        self.second_frame = TaxSystem(self.left_subframe)
+        self.third_frame = TaxSystem(self.left_subframe)
+
+        self.left_frame_last = ttk.Frame(self.left_subframe, padding=10)
         self.left_frame_last.pack(side=tk.BOTTOM, fill="y")
 
         self.right_frame = ttk.Frame(self.root)
@@ -91,53 +91,24 @@ class DohodninarApp:
             fill="x", pady=10
         )
 
-    def tsframe(self, vcmd):
+    def create_scrolling(self):
 
-        the_frame = ttk.Frame(self.left_master_frame, padding=10)
-        the_frame.pack(side=tk.TOP, fill="y")
+        # scroll plastdavcni_sistem
+        canvas = tk.Canvas(self.left_master_frame)
+        scrollbar = ttk.Scrollbar(self.left_master_frame, orient="vertical", command=canvas.yview)
 
-        #region ID
-        ttk.Label(the_frame, text="ID").pack(anchor="w")
-        the_frame.id = ttk.Entry(
-            the_frame, validate="key", validatecommand=vcmd
+        self.left_subframe = ttk.Frame(canvas)
+
+        self.left_subframe.bind(
+            "<Configure>",
+            lambda e: canvas.configure(scrollregion=canvas.bbox("all"))
         )
-        the_frame.id.pack(fill="x", pady=5)
-        the_frame.id.bind("<FocusOut>", self.format_two_decimals)
-        #endregion
 
-        #region Allowance
-        ttk.Label(the_frame, text="Splošna olajšava (€)").pack(anchor="w")
+        canvas.create_window((0, 0), window=self.left_subframe, anchor="nw")
+        canvas.configure(yscrollcommand=scrollbar.set)
 
-        the_frame.general_allowance = ttk.Entry(
-            the_frame, validate="key", validatecommand=vcmd
-        )
-        the_frame.general_allowance.pack(fill="x", pady=5)
-        the_frame.general_allowance.bind("<FocusOut>", self.format_two_decimals)
-        #endregion
-
-        ttk.Separator(the_frame).pack(fill="x", pady=10)
-
-        #region Brackets
-        ttk.Label(the_frame, text="Dohodninski razredi").pack(anchor="w")
-
-        table_frame1 = ttk.Frame(the_frame)
-        table_frame1.pack(fill="both", expand=True)
-
-        ttk.Label(table_frame1, text="Meja (€)").grid(row=0, column=0)
-        ttk.Label(table_frame1, text="Stopnja (%)").grid(row=0, column=1)
-
-        btn_frame1 = ttk.Frame(the_frame)
-        btn_frame1.pack(fill="x", pady=10)
-
-        ttk.Button(btn_frame1, text="Dodaj vrstico", command=self.add_row).pack(
-            side="left", expand=True, fill="x", padx=2
-        )
-        ttk.Button(btn_frame1, text="Briši zadnjo", command=self.remove_row).pack(
-            side="left", expand=True, fill="x", padx=2
-        )
-        #endregion
-
-        return the_frame
+        canvas.pack(side="left", fill="both", expand=True)
+        scrollbar.pack(side="right", fill="y")
 
     def prikazi(self):
 
@@ -243,17 +214,42 @@ class DohodninarApp:
         x_vals_a = []
         y_vals1_a = []
 
-        x_vals, y_vals1 = self.draw_a_system(ds.sistemi[0], "red")
-        self.draw_a_system(ds.sistemi[1], "blue")
+        graph_data = self.systems.get_graph_data()
+
+        x_vals, y_vals1 = self.draw_a_system1(graph_data[0], "red")
+        self.draw_a_system1(graph_data[1], "green")
+        self.draw_a_system1(graph_data[2], "blue")
+
+        # x_vals, y_vals1 = self.draw_a_system(ds.sistemi[0], "red")
+        # self.draw_a_system(ds.sistemi[1], "green")
+        # self.draw_a_system(ds.sistemi[2], "blue")
 
         # taxsys2 = davcni_sistem.DavcniSistem(5000, ds.hr_brackets)
         # self.draw_a_system(taxsys2, "blue")
 
         return x_vals, y_vals1
 
+    def draw_a_system1(self, ts, color):
+
+        # x_vals, y_vals1, y_vals2, y_vals3 = ts.get_taxes(self.systems.get_max_income())
+        # izbira = self.prikaz_var.get()
+        izbira = "4"
+
+        if izbira == "1" or izbira == "4":
+            self.ax.plot(ts[0], ts[1], linestyle="dotted", color=color)
+
+        if izbira == "2" or izbira == "4":
+            self.ax.plot(ts[0], ts[2], color=color)
+
+        if izbira == "3" or izbira == "4":
+            self.ax.plot(ts[0], ts[3], linestyle="dashed", color=color)
+            self.ax.fill_between(ts[0], ts[3], 0, alpha=0.2, color=color)
+
+        return ts[0], ts[1]
+
     def draw_a_system(self, ts, color):
 
-        x_vals, y_vals1, y_vals2, y_vals3 = ts.get_taxes()
+        x_vals, y_vals1, y_vals2, y_vals3 = ts.get_taxes(self.systems.get_max_income())
         # izbira = self.prikaz_var.get()
         izbira = "4"
 

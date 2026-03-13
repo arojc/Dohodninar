@@ -2,46 +2,47 @@ import tkinter as tk
 from tkinter import ttk
 
 
-class TaxSystem(ttk.Frame):
+class TaxSystem():
 
     def __init__(self, parent):
 
-        the_frame = ttk.Frame(parent, padding=10)
-        the_frame.pack(side=tk.TOP, fill="y")
+        self.the_frame = ttk.Frame(parent, padding=10)
+        self.the_frame.pack(side=tk.TOP, fill="y")
 
         #region ID
-        ttk.Label(the_frame, text="ID").pack(anchor="w")
-        the_frame.id = ttk.Entry(the_frame, validate="key")
-        the_frame.id.pack(fill="x", pady=5)
+        ttk.Label(self.the_frame, text="ID").pack(anchor="w")
+        self.id = ttk.Entry(self.the_frame, validate="key")
+        self.id.pack(fill="x", pady=5)
+        self.id.insert(0, "GGG")
         # the_frame.id.bind("<FocusOut>", self.format_two_decimals)
         #endregion
 
         #region Allowance
-        ttk.Label(the_frame, text="Splošna olajšava (€)").pack(anchor="w")
+        ttk.Label(self.the_frame, text="Splošna olajšava (€)").pack(anchor="w")
 
-        the_frame.general_allowance = ttk.Entry(the_frame)
-        the_frame.general_allowance.pack(fill="x", pady=5)
+        self.general_allowance = ttk.Entry(self.the_frame)
+        self.general_allowance.pack(fill="x", pady=5)
         # the_frame.general_allowance.bind("<FocusOut>", self.format_two_decimals)
         #endregion
 
-        ttk.Separator(the_frame).pack(fill="x", pady=10)
+        ttk.Separator(self.the_frame).pack(fill="x", pady=10)
 
         #region Brackets
-        ttk.Label(the_frame, text="Dohodninski razredi").pack(anchor="w")
+        ttk.Label(self.the_frame, text="Dohodninski razredi").pack(anchor="w")
 
-        table_frame1 = ttk.Frame(the_frame)
-        table_frame1.pack(fill="both", expand=True)
+        self.table_frame1 = ttk.Frame(self.the_frame)
+        self.table_frame1.pack(fill="both", expand=True)
 
-        ttk.Label(table_frame1, text="Meja (€)").grid(row=0, column=0)
-        ttk.Label(table_frame1, text="Stopnja (%)").grid(row=0, column=1)
+        ttk.Label(self.table_frame1, text="Meja (€)").grid(row=0, column=0)
+        ttk.Label(self.table_frame1, text="Stopnja (%)").grid(row=0, column=1)
 
-        btn_frame1 = ttk.Frame(the_frame)
-        btn_frame1.pack(fill="x", pady=10)
+        self.btn_frame1 = ttk.Frame(self.the_frame)
+        self.btn_frame1.pack(fill="x", pady=10)
 
-        ttk.Button(btn_frame1, text="Dodaj vrstico", command=self.add_row).pack(
+        ttk.Button(self.btn_frame1, text="Dodaj vrstico", command=self.add_row).pack(
             side="left", expand=True, fill="x", padx=2
         )
-        ttk.Button(btn_frame1, text="Briši zadnjo", command=self.remove_row).pack(
+        ttk.Button(self.btn_frame1, text="Briši zadnjo", command=self.remove_row).pack(
             side="left", expand=True, fill="x", padx=2
         )
         #endregion
@@ -68,3 +69,8 @@ class TaxSystem(ttk.Frame):
             meja, stopnja = self.rows.pop()
             meja.destroy()
             stopnja.destroy()
+
+    def draw_from_system(self, system):
+        self.id.insert(system.id)
+        self.general_allowance.insert(system._splosna_olajsava)
+        pass

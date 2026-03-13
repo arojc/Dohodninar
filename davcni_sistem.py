@@ -3,20 +3,44 @@ import numpy as np
 
 class DavcniSistemi:
 
-    max_income = 0
-    max_limit = 0
-
     sistemi = []
 
     def __init__(self):
+        self.max_income = 0
+        self.max_limit = 0
+
         taxsys1 = DavcniSistem("slotax", 5000, self.slo_brackets)
         self.add_system(taxsys1)
         taxsys2 = DavcniSistem("hrtax", 5000, self.hr_brackets)
         self.add_system(taxsys2)
+        taxsys3 = DavcniSistem("bihtax", 1000, self.bih_brackets)
+        self.add_system(taxsys3)
 
     def add_system(self, system):
         self.sistemi.append(system)
-        self.max_income = max(self.max_income, system.razredi[-2][0] * 1.2)
+        if len(system.razredi) > 1:
+            self.max_income = max(self.max_income, system.razredi[-2][0] * 1.5)
+        print(f"Max Value: {self.max_income}")
+
+    def find_by_id(self, id):
+        for s in self.sistemi:
+            if s.id == id:
+                return s
+        return None
+
+    def remove_system(self, id):
+        the_system = self.find_by_id(id)
+        self.sistemi.remove(the_system)
+
+    def get_max_income(self):
+        return self.max_income
+
+    def get_graph_data(self):
+        graph_data = []
+        for system in self.sistemi:
+            graph_data.append(system.get_taxes(self.max_income))
+
+        return graph_data
 
     slo_brackets = [
         (9721.43, 0.16),
@@ -29,6 +53,10 @@ class DavcniSistemi:
     hr_brackets = [
         (50000, 0.20),
         (sys.float_info.max, 0.30)
+    ]
+
+    bih_brackets = [
+        (sys.float_info.max, 0.10)
     ]
 
 
@@ -78,11 +106,11 @@ class DavcniSistem:
             (meja, stopnja)
         )
 
-    def get_taxes(self):
-        return self.calculate_tax_values(self.splosna_olajsava, self.razredi)
+    def get_taxes(self, max_income):
+        return self.calculate_tax_values(self.splosna_olajsava, self.razredi, max_income)
 
-    def calculate_tax_values(self, allowance, brackets):
-        max_income = brackets[-2][0] * 1.2
+    def calculate_tax_values(self, allowance, brackets, max_income):
+        # max_income = brackets[-2][0] * 1.2
 
         x_vals = []
         y_vals1 = []
