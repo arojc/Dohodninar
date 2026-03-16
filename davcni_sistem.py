@@ -20,7 +20,6 @@ class DavcniSistemi:
         self.sistemi.append(system)
         if len(system.razredi) > 1:
             self.max_income = max(self.max_income, system.razredi[-2][0] * 1.5)
-        print(f"Max Value: {self.max_income}")
 
     def find_by_id(self, id):
         for s in self.sistemi:
@@ -49,8 +48,6 @@ class DavcniSistemi:
 
         for g in graph_data:
             max_val = max(max_val, max(g[1]))
-
-        print(f"max_val: {max_val}")
 
         for g in graph_data:
             g[2] = [g2 * max_val for g2 in g[2]]

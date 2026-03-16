@@ -1,5 +1,7 @@
+import sys
 import tkinter as tk
 from tkinter import ttk
+from tkinter.constants import END
 
 
 class TaxSystem():
@@ -68,7 +70,8 @@ class TaxSystem():
             self.general_allowance.insert(0, "0")
 
         for i, razred in enumerate(self.the_system.razredi):
-            self.brackets[i][0].insert(0, razred[0])
+            if razred[0] < sys.float_info.max-10:
+                self.brackets[i][0].insert(0, razred[0])
             self.brackets[i][1].insert(0, razred[1])
 
     def empty_data(self):
@@ -90,12 +93,15 @@ class TaxSystem():
         self.brackets.append((meja, stopnja))
 
     def data_to_system(self):
+        self.clean_empty_rows()
+
         self.the_system.id = self.id
         self.the_system.splosna_olajsava = self.try_to_compile(self.general_allowance.get())
 
         new_brackets = []
-        for row in self.brackets:
+        for row in self.brackets[0:-1]:
             new_brackets.append((float(row[0].get()), float(row[1].get())))
+        new_brackets.append((sys.float_info.max, float(self.brackets[-1][1].get())))
 
         self.the_system.razredi = new_brackets
 
@@ -115,8 +121,13 @@ class TaxSystem():
             meja, stopnja = self.brackets.pop()
             meja.destroy()
             stopnja.destroy()
+            self.brackets[-1][0].delete(0, END)
 
     def draw_from_system(self, system):
         self.id.insert(system.id)
         self.general_allowance.insert(system._splosna_olajsava)
         pass
+
+    def clean_empty_rows(self):
+        while len(self.brackets[-1][1].get()) == 0:
+            self.remove_row()
