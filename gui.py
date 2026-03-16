@@ -39,12 +39,13 @@ class TaxSystem():
 
         self.brackets = []
 
-        for i, razred in enumerate(system.razredi):
-            br1 = ttk.Entry(self.table_frame1, validate="key")
-            br1.grid(row=i+1, column=0)
-            br2 = ttk.Entry(self.table_frame1, validate="key")
-            br2.grid(row=i+1, column=1)
-            self.brackets.append((br1, br2))
+        if system and system.razredi:
+            for i, razred in enumerate(system.razredi):
+                br1 = ttk.Entry(self.table_frame1, validate="key")
+                br1.grid(row=i+1, column=0)
+                br2 = ttk.Entry(self.table_frame1, validate="key")
+                br2.grid(row=i+1, column=1)
+                self.brackets.append((br1, br2))
 
         self.btn_frame1 = ttk.Frame(self.the_frame)
         self.btn_frame1.pack(fill="x", pady=10)
@@ -101,7 +102,7 @@ class TaxSystem():
         new_brackets = []
         for row in self.brackets[0:-1]:
             new_brackets.append((float(row[0].get()), float(row[1].get())))
-        new_brackets.append((sys.float_info.max, float(self.brackets[-1][1].get())))
+        new_brackets.append((sys.float_info.max, float(self.brackets[-1][1].get()) if len(self.brackets)>0 else 0))
 
         self.the_system.razredi = new_brackets
 
@@ -129,5 +130,5 @@ class TaxSystem():
         pass
 
     def clean_empty_rows(self):
-        while len(self.brackets[-1][1].get()) == 0:
+        while len(self.brackets) > 0 and len(self.brackets[-1][1].get()) == 0:
             self.remove_row()

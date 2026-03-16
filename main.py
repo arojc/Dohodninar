@@ -17,6 +17,9 @@ from gui import TaxSystem
 class DohodninarApp:
 
     def __init__(self, root):
+
+        self.barve = ("red", "green", "blue", "yellow", "orange" "black", "grey")
+
         self.prikaz_var = None
         self.root = root
         self.root.title("Dohodninar")
@@ -91,17 +94,18 @@ class DohodninarApp:
 
         self.prikazi()
 
-        # ttk.Separator(self.left_fixed_frame).pack(fill="x", pady=10)
-        #
-        # ttk.Button(self.left_fixed_frame, text="Izvrši", command=self.update_plot).pack(
-        #     fill="x", pady=10
-        # )
-
     def create_scrolling(self):
         canvas = tk.Canvas(self.left_scrolling_frame)
         scrollbar = ttk.Scrollbar(self.left_scrolling_frame, orient="vertical", command=canvas.yview)
 
         self.left_subframe = ttk.Frame(canvas)
+
+
+        ttk.Separator(self.left_subframe).pack(fill="x", pady=10)
+
+        ttk.Button(self.left_subframe, text="Nov sistem", command=self.nov_sistem).pack(
+            fill="x", pady=10, side="bottom"
+        )
 
         self.left_subframe.bind(
             "<Configure>",
@@ -113,6 +117,10 @@ class DohodninarApp:
 
         canvas.pack(side="left", fill="both", expand=True)
         scrollbar.pack(side="right", fill="y")
+
+    def nov_sistem(self):
+        self.systems.add_system(None)
+        self.sys_frames.append(TaxSystem(self.left_subframe, self.systems.sistemi[-1]))
 
     def prikazi(self):
 
@@ -186,8 +194,8 @@ class DohodninarApp:
         self.ax2.set_yticklabels([f"{i * 10}%" for i in range(11)])
         self.ax2.set_yticks(range(0, 101, 10))
 
-        self.x_vals = x_vals
-        self.y_vals = y_vals
+        # self.x_vals = x_vals
+        # self.y_vals = y_vals
 
         self.canvas.draw()
 
@@ -196,9 +204,14 @@ class DohodninarApp:
 
         graph_data = self.systems.get_graph_data()
 
-        x_vals, y_vals1 = self.draw_a_system(graph_data[0], "red")
-        self.draw_a_system(graph_data[1], "green")
-        self.draw_a_system(graph_data[2], "blue")
+        x_vals = None
+        y_vals1 = None
+        for i, x in enumerate(graph_data):
+            x_vals, y_vals1 = self.draw_a_system(x, self.barve[i%len(self.barve)])
+
+        # x_vals, y_vals1 = self.draw_a_system(graph_data[0], "red")
+        # self.draw_a_system(graph_data[1], "green")
+        # self.draw_a_system(graph_data[2], "blue")
 
         return x_vals, y_vals1
 

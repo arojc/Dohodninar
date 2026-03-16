@@ -4,6 +4,7 @@ import numpy as np
 class DavcniSistemi:
 
     sistemi = []
+    counter = 0
 
     def __init__(self):
         self.max_income = 0
@@ -17,9 +18,14 @@ class DavcniSistemi:
         self.add_system(taxsys3)
 
     def add_system(self, system):
+        if system == None:
+            system = DavcniSistem(f"sistem{self.counter+1}")
+
         self.sistemi.append(system)
         if len(system.razredi) > 1:
             self.max_income = max(self.max_income, system.razredi[-2][0] * 1.5)
+
+        self.counter += 1
 
     def find_by_id(self, id):
         for s in self.sistemi:
@@ -52,6 +58,12 @@ class DavcniSistemi:
         for g in graph_data:
             g[2] = [g2 * max_val for g2 in g[2]]
             g[3] = [g3 * max_val for g3 in g[3]]
+
+    def the_id_already_exists(self, id):
+        for system in self.sistemi:
+            if system.id == id:
+                return False
+        return True
 
 
     slo_brackets = [
