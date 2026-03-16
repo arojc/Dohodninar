@@ -71,13 +71,19 @@ class DohodninarApp:
         self.left_master_frame = ttk.Frame(self.root, padding=10)
         self.left_master_frame.pack(side="left", fill="y")
 
+        self.left_scrolling_frame = ttk.Frame(self.left_master_frame, padding=10)
+
+        self.left_fixed_frame = ttk.Frame(self.left_master_frame, padding=10)
+
+        self.left_master_frame.rowconfigure(0, weight=1)  # zgornji zavzame preostali prostor
+
+        self.left_scrolling_frame.grid(row=0, column=0, sticky="nsew")
+        self.left_fixed_frame.grid(row=1, column=0, sticky="ew")
+
         self.create_scrolling()
 
         for s in self.systems.sistemi:
             self.sys_frames.append(TaxSystem(self.left_subframe, s))
-
-        self.left_frame_last = ttk.Frame(self.left_subframe, padding=10)
-        self.left_frame_last.pack(side=tk.BOTTOM, fill="y")
 
         self.right_frame = ttk.Frame(self.root)
         self.right_frame.pack(side="right", fill="both", expand=True)
@@ -85,13 +91,15 @@ class DohodninarApp:
 
         self.prikazi()
 
-        ttk.Button(self.left_frame_last, text="Izvrši", command=self.update_plot).pack(
-            fill="x", pady=10
-        )
+        # ttk.Separator(self.left_fixed_frame).pack(fill="x", pady=10)
+        #
+        # ttk.Button(self.left_fixed_frame, text="Izvrši", command=self.update_plot).pack(
+        #     fill="x", pady=10
+        # )
 
     def create_scrolling(self):
-        canvas = tk.Canvas(self.left_master_frame)
-        scrollbar = ttk.Scrollbar(self.left_master_frame, orient="vertical", command=canvas.yview)
+        canvas = tk.Canvas(self.left_scrolling_frame)
+        scrollbar = ttk.Scrollbar(self.left_scrolling_frame, orient="vertical", command=canvas.yview)
 
         self.left_subframe = ttk.Frame(canvas)
 
@@ -108,11 +116,15 @@ class DohodninarApp:
 
     def prikazi(self):
 
-        #prikazi
-        grph_frame = ttk.Frame(self.left_frame_last)
-        grph_frame.pack(fill="x", pady=10)
+        ttk.Separator(self.left_fixed_frame).pack(fill="x", pady=10)
 
-        self.prikaz_var = tk.StringVar(self.left_frame_last, value="4")
+        ttk.Button(self.left_fixed_frame, text="Izvrši", command=self.update_plot).pack(
+            fill="x", pady=10, side=tk.RIGHT
+        )
+
+        #prikazi
+
+        self.prikaz_var = tk.StringVar(self.left_fixed_frame, value="4")
 
         values = {"Znesek": "1",
                   "Odstotek": "2",
@@ -120,7 +132,7 @@ class DohodninarApp:
                   "Vse": "4"}
 
         for (text, value) in values.items():
-            tk.Radiobutton(self.left_frame_last, text=text, variable=self.prikaz_var,
+            tk.Radiobutton(self.left_fixed_frame, text=text, variable=self.prikaz_var,
                            value=value, indicator=0,
                            background="light blue").pack(side=tk.LEFT)
 

@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="606b646d-db75-42d7-a9dd-4f0353d7dc84" name="Changes" comment="Popravek normalizacije grafa">
+    <list default="true" id="606b646d-db75-42d7-a9dd-4f0353d7dc84" name="Changes" comment="Upravljanje z vrsticami">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/davcni_sistem.py" beforeDir="false" afterPath="$PROJECT_DIR$/davcni_sistem.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -170,7 +168,15 @@
       <option name="project" value="LOCAL" />
       <updated>1773405629176</updated>
     </task>
-    <option name="localTasksCounter" value="10" />
+    <task id="LOCAL-00010" summary="Upravljanje z vrsticami">
+      <option name="closed" value="true" />
+      <created>1773649149330</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1773649149330</updated>
+    </task>
+    <option name="localTasksCounter" value="11" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -194,7 +200,8 @@
     <MESSAGE value="Prikaz podatkov v levem framu" />
     <MESSAGE value="Branje podatkov iz levega frama" />
     <MESSAGE value="Popravek normalizacije grafa" />
-    <option name="LAST_COMMIT_MESSAGE" value="Popravek normalizacije grafa" />
+    <MESSAGE value="Upravljanje z vrsticami" />
+    <option name="LAST_COMMIT_MESSAGE" value="Upravljanje z vrsticami" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>
