@@ -4,10 +4,8 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="606b646d-db75-42d7-a9dd-4f0353d7dc84" name="Changes" comment="Fiksen levi spodnji frame">
+    <list default="true" id="606b646d-db75-42d7-a9dd-4f0353d7dc84" name="Changes" comment="Dodajanje sistema prek GUI-ja">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/davcni_sistem.py" beforeDir="false" afterPath="$PROJECT_DIR$/davcni_sistem.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/gui.py" beforeDir="false" afterPath="$PROJECT_DIR$/gui.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" afterPath="$PROJECT_DIR$/main.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -186,7 +184,15 @@
       <option name="project" value="LOCAL" />
       <updated>1773657122677</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="Dodajanje sistema prek GUI-ja">
+      <option name="closed" value="true" />
+      <created>1773677315122</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1773677315122</updated>
+    </task>
+    <option name="localTasksCounter" value="13" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -212,7 +218,8 @@
     <MESSAGE value="Popravek normalizacije grafa" />
     <MESSAGE value="Upravljanje z vrsticami" />
     <MESSAGE value="Fiksen levi spodnji frame" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fiksen levi spodnji frame" />
+    <MESSAGE value="Dodajanje sistema prek GUI-ja" />
+    <option name="LAST_COMMIT_MESSAGE" value="Dodajanje sistema prek GUI-ja" />
   </component>
   <component name="github-copilot-workspace">
     <instructionFileLocations>

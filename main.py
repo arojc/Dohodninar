@@ -171,10 +171,9 @@ class DohodninarApp:
 
         self.ax.clear()
 
-        x_vals, y_vals = self.draw_share_rate()
+        max_tax = self.draw_share_rate()
 
         # ---- Fiksna spodnja meja 0 ----
-        max_tax = max(y_vals) if y_vals else 1
         self.ax.set_ylim(bottom=0)
         self.ax.set_xlim(left=0)
 
@@ -194,9 +193,6 @@ class DohodninarApp:
         self.ax2.set_yticklabels([f"{i * 10}%" for i in range(11)])
         self.ax2.set_yticks(range(0, 101, 10))
 
-        # self.x_vals = x_vals
-        # self.y_vals = y_vals
-
         self.canvas.draw()
 
     def draw_share_rate(self):
@@ -204,16 +200,11 @@ class DohodninarApp:
 
         graph_data = self.systems.get_graph_data()
 
-        x_vals = None
-        y_vals1 = None
+        max_tax = 1
         for i, x in enumerate(graph_data):
-            x_vals, y_vals1 = self.draw_a_system(x, self.barve[i%len(self.barve)])
+            max_tax = max(max_tax, self.draw_a_system(x, self.barve[i%len(self.barve)]))
 
-        # x_vals, y_vals1 = self.draw_a_system(graph_data[0], "red")
-        # self.draw_a_system(graph_data[1], "green")
-        # self.draw_a_system(graph_data[2], "blue")
-
-        return x_vals, y_vals1
+        return max_tax
 
     def draw_a_system(self, ts, color):
         izbira = self.prikaz_var.get()
@@ -228,7 +219,8 @@ class DohodninarApp:
             self.ax.plot(ts[0], ts[3], linestyle="dashed", color=color)
             self.ax.fill_between(ts[0], ts[3], 0, alpha=0.2, color=color)
 
-        return ts[0], ts[1]
+        max_tax = max(ts[1]) if ts[1] else 1
+        return max_tax
 
 
     # -----------------------
